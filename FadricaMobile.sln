@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FadricaMobile", "FadricaMobile.csproj", "{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FadricaMobile.Android", "FadricaMobile.Android\FadricaMobile.Android.csproj", "{C6F7477D-03B4-4170-96BC-59BE89F842EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FadricaMobile", "FadricaMobile\FadricaMobile.csproj", "{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,17 +13,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D7125EF-8BEC-4592-8B5D-868D8730A6EF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C6F7477D-03B4-4170-96BC-59BE89F842EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F7477D-03B4-4170-96BC-59BE89F842EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F7477D-03B4-4170-96BC-59BE89F842EA}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C6F7477D-03B4-4170-96BC-59BE89F842EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F7477D-03B4-4170-96BC-59BE89F842EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F7477D-03B4-4170-96BC-59BE89F842EA}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B3F9399-3AE2-4D64-AB53-5CF64DEBBB80}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A58D6E0E-1CD3-4450-AA3B-10554690669A}
+		SolutionGuid = {092D8E25-95FB-4E7D-A193-6FEE875A8F3A}
 	EndGlobalSection
 EndGlobal
