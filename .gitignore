@@ -19,3 +19,5 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+
+Constants.cs
