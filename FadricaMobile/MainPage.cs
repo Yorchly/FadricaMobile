@@ -102,7 +102,7 @@ namespace FadricaMobile
                 inputs.Add(rosconInput, roscon);
                 totalLabel.Text = (int.Parse(totalLabel.Text) + roscon.Cantidad).ToString();
 
-                rosconInput.Completed += UpdateAmountsEvent;
+                rosconInput.TextChanged += UpdateAmountsEvent;
 
                 panel.Children.Add(rosconTypeLabel);
                 panel.Children.Add(rosconInput);
@@ -143,7 +143,7 @@ namespace FadricaMobile
 
         private void UpdateEvent (object sender, EventArgs e)
         {
-
+            
         }
 
         private void UpdateAmountsEvent(object sender, EventArgs e)
