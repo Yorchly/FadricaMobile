@@ -47,7 +47,7 @@ namespace FadricaMobile.api.wrappers
             
         }
 
-        public async Task<bool> CreateRosconAsync(Roscon roscon)
+        public async Task<Roscon> CreateRosconAsync(Roscon roscon)
         {
             try
             {
@@ -55,7 +55,15 @@ namespace FadricaMobile.api.wrappers
                 var content = new StringContent(json.ToLower(), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await client.PostAsync($"{rosconUrl}?token={Constants.Token}", content);
 
-                return response.IsSuccessStatusCode;
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = await response.Content.ReadAsStringAsync();
+                    Roscon rosconFromDb = JsonConvert.DeserializeObject<Roscon>(resp);
+
+                    return rosconFromDb;
+                }
+
+                return null;
             }
             catch (Exception e)
             {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace FadricaMobile
 {
@@ -12,8 +13,20 @@ namespace FadricaMobile
     {
         private readonly RosconWrapper rosconWrapper = new RosconWrapper();
         private readonly RosconTypeWrapper rosconTypeWrapper = new RosconTypeWrapper();
+
         private List<Roscon> roscones;
         private List<RosconType> rosconTypes;
+        private Dictionary<Entry, Roscon> inputs = new Dictionary<Entry, Roscon>();
+        private Roscon rosconFromAPI;
+
+        private readonly Button saveButton = new Button()
+        {
+            Text = "Guardar"
+        };
+        private readonly Button updateButton = new Button()
+        {
+            Text = "Actualizar"
+        };
         private readonly Label totalLabel = new Label() { Text = "0" };
 
         public MainPage()
@@ -56,15 +69,6 @@ namespace FadricaMobile
             roscones = await rosconWrapper.GetAllRosconesAsync(null);
             rosconTypes = await rosconTypeWrapper.GetAllRosconTypeAsync();
 
-            Button saveButton = new Button()
-            {
-                Text = "Guardar"
-            };
-            Button updateButton = new Button()
-            {
-                Text = "Actualizar"
-            };
-
             saveButton.Clicked += SaveEvent;
             updateButton.Clicked += UpdateEvent;
 
@@ -84,22 +88,57 @@ namespace FadricaMobile
                     Text = rosconType.Tipo
                 };
                 Roscon roscon = roscones.Find(x => x.Tipo_Roscon == rosconType.Id);
+
+                if (roscon == null)
+                    // TODO -> Anno passing as argument
+                    roscon = new Roscon { Id = null, Cantidad = 0, Tipo_Roscon = rosconType.Id, Anno = DateTime.Now.Year };
+
                 Entry rosconInput = new Entry()
                 {
-                    Text = roscon == null ? "0" : roscon.Cantidad.ToString(),
+                    Text = roscon.Cantidad.ToString(),
                     Keyboard = Keyboard.Numeric
                 };
 
-                rosconInput.Completed += TotalAmountEvent;
+                inputs.Add(rosconInput, roscon);
+                totalLabel.Text = (int.Parse(totalLabel.Text) + roscon.Cantidad).ToString();
+
+                rosconInput.Completed += UpdateAmountsEvent;
 
                 panel.Children.Add(rosconTypeLabel);
                 panel.Children.Add(rosconInput);
             }
         }
 
+        private async void CreateRoscon(Roscon roscon)
+        {
+            rosconFromAPI = await rosconWrapper.CreateRosconAsync(roscon);
+            roscon.Id = rosconFromAPI.Id;
+        }
+
+        private async void UpdateRoscon(Roscon roscon)
+        {
+            rosconFromAPI = await rosconWrapper.UpdateRosconAsync(roscon);
+        }
+
+        private async void DisplayOkAlert(string title, string messageBody)
+        {
+            await DisplayAlert(title, messageBody, "OK");
+        }
+
         private void SaveEvent (object sender, EventArgs e)
         {
+            saveButton.IsEnabled = false;
 
+            foreach (var roscon in inputs.Values)
+            {
+                if (roscon.Id == null)
+                    CreateRoscon(roscon);
+                else
+                    UpdateRoscon(roscon);
+            }
+
+            DisplayOkAlert("Alerta", "Elementos creados con éxito");
+            saveButton.IsEnabled = true;
         }
 
         private void UpdateEvent (object sender, EventArgs e)
@@ -107,9 +146,24 @@ namespace FadricaMobile
 
         }
 
-        private void TotalAmountEvent (object sender, EventArgs e)
+        private void UpdateAmountsEvent(object sender, EventArgs e)
         {
+            try
+            {
+                var totalAmount = int.Parse(totalLabel.Text);
+                var entrySender = ((Entry)sender);
+                var oldValue = inputs[entrySender].Cantidad;
+                var newValue = int.Parse(entrySender.Text);
 
+                totalAmount = totalAmount - oldValue + newValue;
+                inputs[entrySender].Cantidad = newValue;
+
+                totalLabel.Text = totalAmount.ToString();
+            }
+            catch(Exception error)
+            {
+                Log.Warning("Error in TotalAmountEvent", $"Error -> {error}");
+            }
         }
     }
 }
