@@ -2,6 +2,7 @@
 using FadricaMobile.api.wrappers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -11,8 +12,8 @@ namespace FadricaMobile
     {
         private readonly RosconWrapper rosconWrapper = new RosconWrapper();
         private readonly RosconTypeWrapper rosconTypeWrapper = new RosconTypeWrapper();
-        private readonly List<Roscon> roscones;
-        private readonly List<RosconType> rosconTypes;
+        private List<Roscon> roscones;
+        private List<RosconType> rosconTypes;
         private readonly Label totalLabel = new Label() { Text = "0" };
 
         public MainPage()
@@ -32,28 +33,11 @@ namespace FadricaMobile
                 }
             };
 
+            panel.Children.Add(titleFrame);
+
             if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
-                roscones = rosconWrapper.GetAllRosconesAsync(null).GetAwaiter().GetResult();
-                rosconTypes = rosconTypeWrapper.GetAllRosconTypeAsync().GetAwaiter().GetResult();
-
-                Button saveButton = new Button()
-                {
-                    Text = "Guardar"
-                };
-                Button updateButton = new Button()
-                {
-                    Text = "Actualizar"
-                };
-
-                saveButton.Clicked += SaveEvent;
-                updateButton.Clicked += UpdateEvent;
-
-                panel.Children.Add(titleFrame);
-                SetRosconesAndTypes(roscones, rosconTypes, panel);
-                panel.Children.Add(totalLabel);
-                panel.Children.Add(saveButton);
-                panel.Children.Add(updateButton);
+                InitializingElements(panel);
             }
             else
             {
@@ -61,7 +45,31 @@ namespace FadricaMobile
                     Text = "No tienes conexión a internet"
                 });
             }
-            this.Content = panel;
+
+            this.Content = new ScrollView { Content = panel };
+        }
+
+        private async void InitializingElements(StackLayout panel)
+        {
+            roscones = await rosconWrapper.GetAllRosconesAsync(null);
+            rosconTypes = await rosconTypeWrapper.GetAllRosconTypeAsync();
+
+            Button saveButton = new Button()
+            {
+                Text = "Guardar"
+            };
+            Button updateButton = new Button()
+            {
+                Text = "Actualizar"
+            };
+
+            saveButton.Clicked += SaveEvent;
+            updateButton.Clicked += UpdateEvent;
+
+            SetRosconesAndTypes(roscones, rosconTypes, panel);
+            panel.Children.Add(totalLabel);
+            panel.Children.Add(saveButton);
+            panel.Children.Add(updateButton);
         }
 
         private void SetRosconesAndTypes(List<Roscon> roscones, List<RosconType> rosconTypes, StackLayout panel)
@@ -75,7 +83,7 @@ namespace FadricaMobile
                 Roscon roscon = roscones.Find(x => x.Tipo_Roscon == rosconType.Id);
                 Entry rosconInput = new Entry()
                 {
-                    Text = roscon.Cantidad.ToString(),
+                    Text = roscon == null ? "0" : roscon.Cantidad.ToString(),
                     Keyboard = Keyboard.Numeric
                 };
 
