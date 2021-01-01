@@ -18,7 +18,8 @@ namespace FadricaMobile
 
         public MainPage()
         {
-            StackLayout panel = new StackLayout() { Spacing = 15 };
+            StackLayout contentPanel = new StackLayout() { Spacing = 15 };
+            StackLayout panel = new StackLayout() { Padding = new Thickness(17, 17, 17, 17) };
             Frame titleFrame = new Frame()
             {
                 BackgroundColor = Color.FromHex("#2196F3"),
@@ -33,7 +34,7 @@ namespace FadricaMobile
                 }
             };
 
-            panel.Children.Add(titleFrame);
+            contentPanel.Children.Add(titleFrame);
 
             if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
@@ -45,8 +46,9 @@ namespace FadricaMobile
                     Text = "No tienes conexión a internet"
                 });
             }
+            contentPanel.Children.Add(panel);
 
-            this.Content = new ScrollView { Content = panel };
+            this.Content = new ScrollView { Content = contentPanel };
         }
 
         private async void InitializingElements(StackLayout panel)
@@ -67,6 +69,7 @@ namespace FadricaMobile
             updateButton.Clicked += UpdateEvent;
 
             SetRosconesAndTypes(roscones, rosconTypes, panel);
+            panel.Children.Add(new Label { Text = "Total" });
             panel.Children.Add(totalLabel);
             panel.Children.Add(saveButton);
             panel.Children.Add(updateButton);
