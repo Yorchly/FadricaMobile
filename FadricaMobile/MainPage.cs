@@ -147,6 +147,7 @@ namespace FadricaMobile
             updateButton.IsEnabled = false;
             roscones = await rosconWrapper.GetAllRosconesAsync(null);
             rosconTypes = await rosconTypeWrapper.GetAllRosconTypeAsync();
+            totalLabel.Text = "0";
 
             foreach (Roscon roscon in roscones)
             {
@@ -163,6 +164,8 @@ namespace FadricaMobile
                     elementInInputs.Roscon = roscon;
                     elementInInputs.Entry.Text = roscon.Cantidad.ToString();
                 }
+
+                totalLabel.Text = (int.Parse(totalLabel.Text) + roscon.Cantidad).ToString();
             }
 
             updateButton.IsEnabled = true;
