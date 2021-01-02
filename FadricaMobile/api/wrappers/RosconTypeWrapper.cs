@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace FadricaMobile.api.wrappers
 {
@@ -22,16 +23,24 @@ namespace FadricaMobile.api.wrappers
 
         public async Task<List<RosconType>> GetAllRosconTypeAsync()
         {
-            HttpResponseMessage response = await client.GetAsync($"{tipoRosconUrl}?token={Constants.Token}");
-            List<RosconType> rosconTypes = null;
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var resp = await response.Content.ReadAsStringAsync();
-                rosconTypes = JsonConvert.DeserializeObject<List<RosconType>>(resp);
-            }
+                HttpResponseMessage response = await client.GetAsync($"{tipoRosconUrl}?token={Constants.Token}");
+                List<RosconType> rosconTypes = null;
 
-            return rosconTypes;
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = await response.Content.ReadAsStringAsync();
+                    rosconTypes = JsonConvert.DeserializeObject<List<RosconType>>(resp);
+                }
+
+                return rosconTypes;
+            }
+            catch (Exception e)
+            {
+                Log.Warning("UpdateRosconAsync error", $"Error -> {e.Message}");
+                throw e;
+            }
         }
     }
 }
