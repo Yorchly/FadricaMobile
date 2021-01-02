@@ -16,7 +16,7 @@ namespace FadricaMobile
 
         private List<Roscon> roscones;
         private List<RosconType> rosconTypes;
-        private Dictionary<Entry, Roscon> inputs = new Dictionary<Entry, Roscon>();
+        private List<EntryRoscon> inputs = new List<EntryRoscon>();
         private Roscon rosconFromAPI;
 
         private readonly Button saveButton = new Button()
@@ -99,7 +99,7 @@ namespace FadricaMobile
                     Keyboard = Keyboard.Numeric
                 };
 
-                inputs.Add(rosconInput, roscon);
+                inputs.Add(new EntryRoscon { Entry = rosconInput, Roscon = roscon });
                 totalLabel.Text = (int.Parse(totalLabel.Text) + roscon.Cantidad).ToString();
 
                 rosconInput.TextChanged += UpdateAmountsEvent;
@@ -129,8 +129,9 @@ namespace FadricaMobile
         {
             saveButton.IsEnabled = false;
 
-            foreach (var roscon in inputs.Values)
+            foreach (var element in inputs)
             {
+                var roscon = element.Roscon;
                 if (roscon.Id == null)
                     CreateRoscon(roscon);
                 else
@@ -141,9 +142,31 @@ namespace FadricaMobile
             saveButton.IsEnabled = true;
         }
 
-        private void UpdateEvent (object sender, EventArgs e)
+        private async void UpdateEvent (object sender, EventArgs e)
         {
-            
+            updateButton.IsEnabled = false;
+            roscones = await rosconWrapper.GetAllRosconesAsync(null);
+            rosconTypes = await rosconTypeWrapper.GetAllRosconTypeAsync();
+
+            foreach (Roscon roscon in roscones)
+            {
+                var elementInInputs = inputs.Find(x => x.Roscon.Id == roscon.Id);
+
+                if (elementInInputs != null)
+                {
+                    elementInInputs.Roscon.Cantidad = roscon.Cantidad;
+                    elementInInputs.Entry.Text = roscon.Cantidad.ToString();
+                }
+                else
+                {
+                    elementInInputs = inputs.Find(x => x.Roscon.Tipo_Roscon == roscon.Tipo_Roscon);
+                    elementInInputs.Roscon = roscon;
+                    elementInInputs.Entry.Text = roscon.Cantidad.ToString();
+                }
+            }
+
+            updateButton.IsEnabled = true;
+            DisplayOkAlert("Alerta", "Elementos actualizados correctamente");
         }
 
         private void UpdateAmountsEvent(object sender, EventArgs e)
@@ -152,11 +175,12 @@ namespace FadricaMobile
             {
                 var totalAmount = int.Parse(totalLabel.Text);
                 var entrySender = ((Entry)sender);
-                var oldValue = inputs[entrySender].Cantidad;
+                var roscon = inputs.Find(x => x.Entry == entrySender).Roscon;
+                var oldValue = roscon.Cantidad;
                 var newValue = int.Parse(entrySender.Text);
 
                 totalAmount = totalAmount - oldValue + newValue;
-                inputs[entrySender].Cantidad = newValue;
+                roscon.Cantidad = newValue;
 
                 totalLabel.Text = totalAmount.ToString();
             }
