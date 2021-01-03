@@ -88,24 +88,38 @@ namespace FadricaMobile
                     Text = rosconType.Tipo
                 };
                 Roscon roscon = roscones.Find(x => x.Tipo_Roscon == rosconType.Id);
-
-                if (roscon == null)
-                    // TODO -> Anno passing as argument
-                    roscon = new Roscon { Id = null, Cantidad = 0, Tipo_Roscon = rosconType.Id, Anno = DateTime.Now.Year };
-
                 Entry rosconInput = new Entry()
                 {
                     Text = roscon.Cantidad.ToString(),
                     Keyboard = Keyboard.Numeric
                 };
+                Button addAmount = new Button { Text = "+", VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.Center };
+                Button subtractAmount = new Button { Text = "-", VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.Center };
+                Button editAmount = new Button { Text = "edit", VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.Center };
+                StackLayout buttonsPanel = new StackLayout
+                {
+                    Margin = new Thickness(5),
+                    Orientation = StackOrientation.Horizontal,
+                    HorizontalOptions = LayoutOptions.Center,
+                    Children = { addAmount, subtractAmount, editAmount }
+                };
 
-                inputs.Add(new EntryRoscon { Entry = rosconInput, Roscon = roscon });
+                if (roscon == null)
+                    // TODO -> Anno passing as argument
+                    roscon = new Roscon { Id = null, Cantidad = 0, Tipo_Roscon = rosconType.Id, Anno = DateTime.Now.Year };
+
+                inputs.Add(new EntryRoscon { Entry = rosconInput, Roscon = roscon, AddButton = addAmount, SubtractButton = subtractAmount, EditButton = editAmount, Amount = 0 });
                 totalLabel.Text = (int.Parse(totalLabel.Text) + roscon.Cantidad).ToString();
+
+                addAmount.Clicked += AddAmountEvent;
+                subtractAmount.Clicked += SubtractAmountEvent;
+                editAmount.Clicked += EditAmountEvent;
 
                 rosconInput.TextChanged += UpdateAmountsEvent;
 
                 panel.Children.Add(rosconTypeLabel);
                 panel.Children.Add(rosconInput);
+                panel.Children.Add(buttonsPanel);
             }
         }
 
@@ -191,6 +205,35 @@ namespace FadricaMobile
             {
                 Log.Warning("Error in TotalAmountEvent", $"Error -> {error}");
             }
+        }
+
+        private void AddAmountEvent(object sender, EventArgs e)
+        {
+            var button = ((Button)sender);
+            var input = inputs.Find(x => x.AddButton == button);
+
+            input.Entry.Text = (int.Parse(input.Entry.Text) + input.Amount).ToString();
+            //totalLabel.Text = (int.Parse(totalLabel.Text) + input.Amount).ToString();
+        }
+
+        private void SubtractAmountEvent(object sender, EventArgs e)
+        {
+            var button = ((Button)sender);
+            var input = inputs.Find(x => x.SubtractButton == button);
+
+            input.Entry.Text = (int.Parse(input.Entry.Text) - input.Amount).ToString();
+            //totalLabel.Text = (int.Parse(totalLabel.Text) - input.Amount).ToString();
+        }
+
+        private async void EditAmountEvent(object sender, EventArgs e)
+        {
+            var button = ((Button)sender);
+            var input = inputs.Find(x => x.EditButton == button);
+            string result;
+            result = await DisplayPromptAsync("Cantidad para añadir o quitar", "Añada cantidad", keyboard: Keyboard.Numeric, initialValue: input.Amount.ToString());
+
+            
+            input.Amount = int.Parse(result ?? "0");
         }
     }
 }
